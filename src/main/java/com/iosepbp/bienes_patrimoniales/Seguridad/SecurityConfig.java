@@ -22,16 +22,20 @@ public class SecurityConfig {
 
     private final JWTFilter jwtFilter;
 
+    private final SQLInjectionFilter sqlInjectionFilter;
+
     public SecurityConfig(
             UsuarioDetailsService usuarioDetailsService,
             LoginSuccessHandler loginSuccessHandler,
             LoginFailureHandler loginFailureHandler,
-            JWTFilter jwtFilter
+            JWTFilter jwtFilter,
+            SQLInjectionFilter sqlInjectionFilter
     ){
         this.usuarioDetailsService = usuarioDetailsService;
         this.loginSuccessHandler = loginSuccessHandler;
         this.loginFailureHandler = loginFailureHandler;
         this.jwtFilter = jwtFilter;
+        this.sqlInjectionFilter = sqlInjectionFilter;
     }
 
     @Bean
@@ -44,6 +48,7 @@ public class SecurityConfig {
                                 "/auth/login", "/auth/registro").permitAll()
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(sqlInjectionFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login?logout")
