@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -20,26 +21,45 @@ public class ControladorDepartamento {
         this.servicioDepartamento = servicioDepartamento;
     }
 
+    // Convierte la entidad Departamento al DTO de respuesta
+    public DepartamentoResponse toResponse(Departamento departamento) {
+        DepartamentoResponse response = new DepartamentoResponse();
+        response.setId_departamento(departamento.getId_departamento());
+        response.setCod_departamento(departamento.getCod_departamento());
+        response.setDesc_departamento(departamento.getDesc_departamento());
+        return response;
+    }
+
     @GetMapping
-    public List<Departamento> listarDepartamentos() {
-        return servicioDepartamento.listarDepartamentos();
+    public List<DepartamentoResponse> listarDepartamentos() {
+        List<DepartamentoResponse> responses = new ArrayList<>();
+        for (Departamento d : servicioDepartamento.listarDepartamentos()) {
+            responses.add(toResponse(d));
+        }
+        return responses;
     }
 
     @GetMapping("/{id}")
-    public Departamento buscarDepartamento(@PathVariable Integer id) {
-        return servicioDepartamento.buscarPorId(id);
+    public DepartamentoResponse buscarDepartamento(@PathVariable Integer id) {
+        return toResponse(servicioDepartamento.buscarPorId(id));
     }
 
     @PostMapping("/crear")
     @ResponseStatus(HttpStatus.CREATED)
-    public Departamento crearDepartamento(@Valid @RequestBody CrearDepartamentoRequest request) {
-        return servicioDepartamento.crearDepartamento(request.cod_departamento, request.desc_departamento);
+    public DepartamentoResponse crearDepartamento(@Valid @RequestBody CrearDepartamentoRequest request) {
+        return toResponse(servicioDepartamento.crearDepartamento(
+                request.cod_departamento,
+                request.desc_departamento
+        ));
     }
 
     @PutMapping("/{id}")
-    public Departamento actualizarDepartamento(@PathVariable Integer id,
-                                               @Valid @RequestBody CrearDepartamentoRequest request) {
-        return servicioDepartamento.actualizarDepartamento(id, request.cod_departamento, request.desc_departamento);
+    public DepartamentoResponse actualizarDepartamento(@PathVariable Integer id,
+                                                       @Valid @RequestBody CrearDepartamentoRequest request) {
+        return toResponse(servicioDepartamento.actualizarDepartamento(
+                id,
+                request.cod_departamento,
+                request.desc_departamento
+        ));
     }
-
 }
