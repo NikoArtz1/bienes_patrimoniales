@@ -26,7 +26,7 @@ public class Rubro {
     }
 
     public Integer getId_rubro_bien(){
-        return this.id_rubro_bien;
+        return (Integer) this.id_rubro_bien;
     }
 
     //cod_rubro_bien

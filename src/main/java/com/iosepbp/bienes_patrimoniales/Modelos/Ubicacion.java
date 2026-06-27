@@ -26,7 +26,7 @@ public class Ubicacion {
     }
 
     public Integer getId_ubicacion_bien(){
-        return this.id_ubicacion_bien;
+        return (Integer) this.id_ubicacion_bien;
     }
 
     //cod_ubicacion_bien

@@ -26,7 +26,7 @@ public class Departamento {
     }
 
     public Integer getId_departamento(){
-        return this.id_departamento;
+        return (Integer) this.id_departamento;
     }
 
     //cod_departamento

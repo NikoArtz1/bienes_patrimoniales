@@ -26,7 +26,7 @@ public class Tipo {
     }
 
     public Integer getId_tipo_bien(){
-        return this.id_tipo_bien;
+        return (Integer) this.id_tipo_bien;
     }
 
     //cod_tipo_bien

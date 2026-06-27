@@ -26,7 +26,7 @@ public class Responsable {
     }
 
     public Integer getId_responsable(){
-        return this.id_responsable;
+        return (Integer) this.id_responsable;
     }
 
     //cod_responsable

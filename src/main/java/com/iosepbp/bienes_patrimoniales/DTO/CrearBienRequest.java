@@ -64,7 +64,7 @@ public class CrearBienRequest {
         this.id_rubro_bien = rubro;
         this.id_tipo_bien = tipo;
         this.id_departamento = departamento;
-        this.id_departamento = responsable;
+        this.id_responsable = responsable;
         this.id_ubicacion = ubicacion;
         this.fecha_alta = fecha_alta;
         this.moneda = moneda;

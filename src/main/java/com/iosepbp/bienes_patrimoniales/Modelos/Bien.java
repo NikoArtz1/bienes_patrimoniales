@@ -89,7 +89,7 @@ public class Bien {
         this.id_bien = id_bien;
     }
     public Integer getId_bien(){
-        return this.id_bien;
+        return (Integer) this.id_bien;
     }
 
     //cod_bien
