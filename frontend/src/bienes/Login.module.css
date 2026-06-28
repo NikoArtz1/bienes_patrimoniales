@@ -1,0 +1,111 @@
+.contenedorLogin {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  /* Fondo degradado: de azul oscuro a azul medio corporativo */
+  background: linear-gradient(135deg, #1A2536 0%, #3C5177 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.tarjetaLogin {
+  /* Tarjeta de login en azul claro corporativo */
+  background-color: #EBF1F6; 
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.contenedorLogo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.logoImg {
+  /* Logo más grande y con mayor presencia */
+  max-width: 300px; 
+  height: auto;
+  object-fit: contain;
+}
+
+.subtitulo {
+  color: #4A5568;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 30px;
+  letter-spacing: 0.3px;
+}
+
+.grupoInput {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.grupoInput label {
+  display: block;
+  margin-bottom: 6px;
+  color: #1A2536;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.inputControl {
+  width: 100%;
+  padding: 12px;
+  background-color: white;
+  /* Líneas más delgadas (1px) en el azul oscuro corporativo */
+  border: 1px solid #1A2536; 
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #1A2536;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.inputControl:focus {
+  outline: none;
+  /* Al hacer foco, mantenemos una línea estilizada con un leve resplandor */
+  border-color: #3C5177;
+  box-shadow: 0 0 0 3px rgba(60, 81, 119, 0.15);
+}
+
+.btnIngresar {
+  width: 100%;
+  padding: 12px;
+  background-color: #1A2536;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  margin-top: 10px;
+}
+
+.btnIngresar:hover {
+  background-color: #2A3B58;
+}
+
+.btnIngresar:active {
+  transform: scale(0.98);
+}
+
+.mensajeError {
+  background-color: #fed7d7;
+  color: #9b2c2c;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+  font-weight: bold;
+  border: 1px solid #feb2b2;
+}
