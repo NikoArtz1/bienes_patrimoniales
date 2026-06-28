@@ -2,9 +2,7 @@ package com.iosepbp.bienes_patrimoniales.Servicios;
 import com.iosepbp.bienes_patrimoniales.Modelos.*;
 import com.iosepbp.bienes_patrimoniales.Repositorios.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service

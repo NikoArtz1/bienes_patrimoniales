@@ -29,7 +29,7 @@ public class ControladorBien {
         response.setCod_bien(bien.getCod_bien());
         response.setDesc_bien(bien.getDesc_bien());
         response.setDesc_detallada(bien.getDesc_detallada());
-        response.setIdRubro(bien.getRubro().getId_rubro_bien());
+        response.setId_rubro_bien(bien.getRubro().getId_rubro_bien());
         response.setId_tipo_bien(bien.getTipo().getId_tipo_bien());
         response.setId_departamento(bien.getDepartamento().getId_departamento());
         response.setId_responsable(bien.getResponsable().getId_responsable());

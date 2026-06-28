@@ -82,11 +82,11 @@ public class BienResponse {
     }
 
     //rubro
-    public void setIdRubro(Integer id_rubro_bien){
+    public void setId_rubro_bien(Integer id_rubro_bien){
         this.id_rubro_bien = id_rubro_bien;
     }
 
-    public Integer getIdRubro(){
+    public Integer getId_rubro_bien(){
         return this.id_rubro_bien;
     }
 

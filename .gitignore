@@ -33,3 +33,5 @@ build/
 .vscode/
 
 backend/logs/
+backend/logs/app.log
+backend/src/main/resources/application.properties
