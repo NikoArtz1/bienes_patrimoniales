@@ -1,0 +1,135 @@
+.contenedor {
+  margin-top: 20px;
+  color: #333;
+  padding: 0px; /* Ajustamos para que use el espacio del fondo */
+}
+
+/* --- TARJETA DEL FORMULARIO --- */
+.tarjetaFormulario {
+  background-color: #BCC6D1; /* Fondo Azul Claro Corporativo */
+  padding: 25px;
+  border-radius: 10px;
+  margin-bottom: 35px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); /* Sombra más pronunciada para dar relieve */
+  border: 2px solid #3C5177; /* Bordes en Azul Oscuro Corporativo */
+}
+
+.tarjetaFormulario h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #3C5177; /* Título en Azul Oscuro Corporativo */
+  font-size: 1.4rem;
+  font-weight: bold;
+  border-bottom: 2px solid #3C5177; /* Línea divisoria en Azul Oscuro */
+  padding-bottom: 8px;
+}
+
+.gridForm {
+  display: grid;
+  gap: 15px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.campoFull {
+  grid-column: 1 / span 2;
+}
+
+.grupoInput {
+  display: flex;
+  flex-direction: column;
+}
+
+.grupoInput label {
+  font-size: 0.95rem;
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: #000000; /* Etiquetas de los campos en Negro Puro para máxima lectura */
+}
+
+.inputControl {
+  padding: 10px;
+  border: 1px solid #3C5177; /* Borde de los inputs en Azul Oscuro */
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background-color: #ffffff; /* Fondo blanco para que lo que escribe el usuario se lea claro */
+  color: #000000;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.inputControl:focus {
+  outline: none;
+  border-color: #3C5177;
+  box-shadow: 0 0 0 3px rgba(60, 81, 119, 0.3);
+}
+
+.btnGuardar {
+  padding: 12px 24px;
+  background-color: #3C5177; /* Botón en Azul Oscuro Corporativo para destacar sobre el fondo claro */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: background-color 0.2s, transform 0.1s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.btnGuardar:hover {
+  background-color: #24324B; /* Un tono más oscuro al pasar el mouse */
+  transform: translateY(-1px);
+}
+
+/* --- TABLA DE BIENES --- */
+.tituloTabla {
+  color: #ffffff; /* Texto en blanco para resaltar sobre el degradado de la pantalla */
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
+
+.tablaBienes {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background-color: #ffffff; /* Cuerpo de la tabla blanco para limpieza visual */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #3C5177; /* Bordes exteriores de la tabla en Azul Oscuro */
+}
+
+.tablaBienes th {
+  background-color: #3C5177; /* Cabecera en Azul Oscuro Corporativo */
+  color: white;
+  padding: 14px 16px;
+  font-weight: bold;
+  text-align: left;
+  font-size: 1rem;
+  border-bottom: 2px solid #3C5177;
+}
+
+.tablaBienes td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #BCC6D1; /* Divisiones internas en Azul Claro */
+  color: #000000; /* Contenido de la tabla en Negro para lectura perfecta */
+  font-size: 0.95rem;
+}
+
+.tablaBienes tbody tr:hover {
+  background-color: rgba(188, 198, 209, 0.25); /* Destacado de fila al pasar el mouse */
+}
+
+.codigoDestacado {
+  color: #3C5177; /* Código resaltado en Azul Oscuro */
+  font-family: monospace;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.textoSecundario {
+  color: #4A5568; /* Gris oscuro para descripciones largas */
+  font-size: 0.85rem;
+  display: block;
+  margin-top: 4px;
+}
