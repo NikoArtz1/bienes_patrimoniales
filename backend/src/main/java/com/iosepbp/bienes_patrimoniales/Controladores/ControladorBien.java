@@ -28,24 +28,27 @@ public class ControladorBien {
         this.servicioBien = servicioBien;
     }
 
-    public BienResponse toResponse(Bien bien){
-        //Creamos un response vacio
+    public BienResponse toResponse(Bien bien) {
         BienResponse response = new BienResponse();
 
-        //Lo llenamos con los campos de "bien"
-        //Deberiamos intentar reducir la cantidad de metodos encadenados aqui
         response.setId_bien(bien.getId_bien());
         response.setCod_bien(bien.getCod_bien());
         response.setDesc_bien(bien.getDesc_bien());
         response.setDesc_detallada(bien.getDesc_detallada());
         response.setId_rubro_bien(bien.getRubro().getId_rubro_bien());
         response.setId_tipo_bien(bien.getTipo().getId_tipo_bien());
-        response.setId_departamento(bien.getDepartamento().getId_departamento());
-        response.setId_responsable(bien.getResponsable().getId_responsable());
-        response.setId_ubicacion(bien.getUbicacion().getId_ubicacion_bien());
+        response.setId_departamento(
+                bien.getDepartamento() != null ? bien.getDepartamento().getId_departamento() : null);
+        response.setId_responsable(
+                bien.getResponsable() != null ? bien.getResponsable().getId_responsable() : null
+        );
+        response.setId_ubicacion(
+                bien.getUbicacion() != null ? bien.getUbicacion().getId_ubicacion_bien() : null);
         response.setFecha_alta(bien.getFecha_alta());
-        response.setMoneda(bien.getMoneda());
-        response.setValor_moneda(bien.getValor_moneda());
+        response.setMoneda(
+                bien.getMoneda() != null ? bien.getMoneda() : null);
+        response.setValor_moneda(
+                bien.getValor_moneda() != null ? bien.getValor_moneda() : null);
 
         return response;
     }
