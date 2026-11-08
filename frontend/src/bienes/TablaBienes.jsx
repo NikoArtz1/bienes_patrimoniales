@@ -27,6 +27,7 @@ const LISTA_RUBROS = [
   { id: 499, nombre: "OTROS BIENES VARIOS" }
 ];
 
+
 const TIPOS_BIEN_499 = [
   { cod: "499-001", nombre: "DESTRUCTORA" }, { cod: "499-002", nombre: "LECTOR" },
   { cod: "499-003", nombre: "CAMARA" }, { cod: "499-004", nombre: "SOLDADOR" },
@@ -91,6 +92,15 @@ function TablaBienes() {
   const [bienParaImprimir, setBienParaImprimir] = useState(null);
   const [incluirBarras, setIncluirBarras] = useState(true);
   const [incluirQR, setIncluirQR] = useState(true);
+  // --- BUSCADOR ---
+  const [busqueda, setBusqueda] = useState('');
+
+  const bienesFiltrados = bienes.filter(bien =>
+    Object.values(bien).some(valor =>
+      valor?.toString().toLowerCase().includes(busqueda.toLowerCase())
+    )
+  );
+
   const lanzarImpresion = () => {
     window.print();
   };
@@ -100,6 +110,8 @@ function TablaBienes() {
     setRubroSeleccionado(valor);
     setTipoSeleccionado('');
   };
+
+  
 
   const toggleEstado = (idBien) => {
     setBienes(bienes.map(bien => {
@@ -270,6 +282,38 @@ function TablaBienes() {
         </form>
       </div>
 
+      {/* --- BUSCADOR --- */}
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        backgroundColor: '#f1f3f6', 
+        border: '1px solid #ccc', 
+        borderRadius: '8px', 
+        padding: '8px 12px', 
+        marginTop: '30px', 
+        marginBottom: '20px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+      }}>
+        <span style={{ marginRight: '10px', color: '#3C5177', fontSize: '1.2rem' }}></span>
+        <input
+          type="text"
+          placeholder="Buscar bienes ..."
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          style={{
+            flex: 1,
+            border: 'none',
+            outline: 'none',
+            backgroundColor: 'transparent',
+            fontSize: '1rem',
+            color: '#333'
+          }}
+        />
+      </div>
+
+
+      
+
       {/* --- ENCABEZADO DE TABLA Y BOTONERA DE EXPORTACIÓN --- */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '30px', flexWrap: 'wrap', gap: '15px' }}>
         <h2 className={styles.tituloTabla} style={{ margin: 0 }}>Listado de Bienes Patrimoniales</h2>
@@ -280,13 +324,13 @@ function TablaBienes() {
             onClick={exportarAExcel}
             style={{ padding: '8px 16px', backgroundColor: '#1F7246', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
           >
-            📊 Exportar Excel
+             Exportar Excel
           </button>
           <button 
             onClick={exportarAPDF}
             style={{ padding: '8px 16px', backgroundColor: '#A32424', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
           >
-            📄 Exportar PDF
+             Exportar PDF
           </button>
         </div>
       </div>
@@ -306,7 +350,7 @@ function TablaBienes() {
           </tr>
         </thead>
         <tbody>
-          {bienes.map((bien) => (
+        {bienesFiltrados.map((bien) => (
             <tr key={bien.id_bien}>
               <td className={styles.codigoDestacado}>{bien.cod_bien}</td>
               <td>
@@ -332,7 +376,7 @@ function TablaBienes() {
               </td>
               <td style={{ textAlign: 'center' }}>
                 <button onClick={() => setBienParaImprimir(bien)} style={{ padding: '6px 12px', backgroundColor: '#3C5177', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer' }}>
-                  🖨️ Etiquetas
+                   Etiquetas
                 </button>
               </td>
             </tr>

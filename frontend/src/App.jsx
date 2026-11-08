@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Login from './bienes/Login';
 import TablaBienes from './bienes/TablaBienes';
-// Importamos el logo institucional
 import logoInstitucional from './assets/logoiosep.webp'; 
 
 function App() {
@@ -28,76 +27,102 @@ function App() {
   }
 
   return (
-    /* FONDO DEGRADADO COMPLETO Y FIJO (Azul Oscuro a Azul Medio) */
     <div style={{ 
       minHeight: '100vh', 
       width: '100%',
-      background: 'linear-gradient(135deg, #3C5177 0%, rgba(0,0,0,0.2) 100%)',
-      backgroundAttachment: 'fixed', 
-      paddingBottom: '5px',
-      boxSizing: 'border-box',
-      margin: 0
+      margin: 0,
+      padding: 0,
+      overflowX: 'hidden',
+      background: 'linear-gradient(135deg, #1A2536 0%, #3C5177 100%)',
+      backgroundRepeat: 'no-repeat',
+      backgroundSize: 'cover',
+      backgroundAttachment: 'fixed'
     }}>
       
-      {/* CONTENEDOR PRINCIPAL DEL SISTEMA */}
-      <main style={{ padding: '40px 40px 0 40px' }}>
-        
-        {/* NUEVA FILA INSTITUCIONAL EN EL CONTENIDO (Reemplaza a la barra superior) */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          marginBottom: '30px',
-          width: '100%'
+      {/* CABECERA FIJA */}
+      <div style={{ 
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        marginRight: '17px', // 👈 deja espacio para la barra de scroll
+        zIndex: 1000,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        background: 'linear-gradient(135deg,#3C5177 0%,#1A2536 100%)',
+        padding: '20px 40px',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
+      }}>
+        {/* IZQUIERDA: Logo */}
+        <img 
+          src={logoInstitucional} 
+          alt="IOSEP" 
+          style={{ 
+            height: '100px',
+            width: 'auto',
+            objectFit: 'contain'
+          }} 
+        />
+
+        {/* CENTRO: Título */}
+        <h1 style={{ 
+          margin: 0, 
+          fontSize: '2rem', 
+          fontWeight: 'bold', 
+          letterSpacing: '1px',
+          color: '#EBF1F6',
+          textShadow: '0 2px 4px rgba(0,0,0,0.2)',
+          textAlign: 'center',
+          flex: 1,
+          textTransform: 'uppercase',
+          fontFamily: 'Roboto, Arial, sans-serif'
+
         }}>
-          {/* LADO IZQUIERDO: Logo y Título alineados */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <img 
-              src={logoInstitucional} 
-              alt="IOSEP" 
-              style={{ 
-                height: '100px', /* Un tamaño claro y nítido */
-                width: 'auto', 
-                objectFit: 'contain'
-              }} 
-            />
-            <h1 style={{ 
-              margin: 0, 
-              fontSize: '1.6rem', 
-              fontWeight: 'bold', 
-              letterSpacing: '0.5px',
-              color: '#EBF1F6', /* Blanco azulado claro que combina excelente */
-              textShadow: '0 2px 4px rgba(0,0,0,0.2)'
-            }}>
-              Sistema de Gestión de Bienes Patrimoniales
-            </h1>
-          </div>
+          Sistema de Gestión de Bienes Patrimoniales
+        </h1>
 
-          {/* LADO DERECHO: Botón Cerrar Sesión */}
-          <button 
-            onClick={handleLogout}
-            style={{ 
-              backgroundColor: '#e53e3e', 
-              color: 'white', 
-              border: 'none', 
-              padding: '10px 20px', 
-              borderRadius: '6px', 
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontSize: '0.95rem',
-              transition: 'background-color 0.2s, transform 0.1s',
-              boxShadow: '0 4px 10px rgba(0,0,0,0.15)'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#c53030'}
-            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#e53e3e'}
-            onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.96)'}
-            onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-          >
-            Cerrar Sesión 🚪
-          </button>
-        </div>
+        {/* DERECHA: Botón */}
+        <button 
+          onClick={handleLogout}
+          style={{ 
+            backgroundColor: 'white',
+            color: '#1A2536',
+            border: '2px solid #1A2536',
+            padding: '10px 20px',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '0.95rem',
+            transition: 'all 0.2s ease',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
+            marginRight: '40px'
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = '#f0f0f0';
+            e.currentTarget.style.color = '#1A2536';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = 'white';
+            e.currentTarget.style.color = '#1A2536';
+          }}
+          onMouseDown={(e) => {
+            e.currentTarget.style.backgroundColor = '#1A2536';
+            e.currentTarget.style.color = 'white';
+            e.currentTarget.style.transform = 'scale(0.96)';
+          }}
+          onMouseUp={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+        >
+          Cerrar Sesión
+        </button>
+      </div>
 
-        {/* COMPONENTE PRINCIPAL (Tu Formulario y Tabla Originales) */}
+      {/* CONTENIDO PRINCIPAL */}
+      <main style={{ 
+        padding: '140px 40px 40px 40px' // 👈 espacio para que el contenido no se tape
+      }}>
         <TablaBienes />
       </main>
     </div>
@@ -105,3 +130,4 @@ function App() {
 }
 
 export default App;
+
