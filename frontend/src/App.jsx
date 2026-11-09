@@ -68,7 +68,7 @@ function App() {
         {/* CENTRO: Título */}
         <h1 style={{ 
           margin: 0, 
-          fontSize: '2rem', 
+          fontSize: '1.6rem', 
           fontWeight: 'bold', 
           letterSpacing: '1px',
           color: '#EBF1F6',
@@ -76,7 +76,8 @@ function App() {
           textAlign: 'center',
           flex: 1,
           textTransform: 'uppercase',
-          fontFamily: 'Roboto, Arial, sans-serif'
+          fontFamily: 'Roboto, Arial, sans-serif',
+          whiteSpace: 'nowrap'
 
         }}>
           Sistema de Gestión de Bienes Patrimoniales

@@ -78,6 +78,11 @@ function TablaBienes() {
   const [bienes, setBienes] = useState(() => 
     MOCK_BIENES.map(b => ({ ...b, estado: b.estado || 'Alta', fecha_alta: b.fecha_alta || new Date().toISOString() }))
   );
+  // Estados para manejar los rubros y el modal
+  const [rubros, setRubros] = useState(LISTA_RUBROS);
+  const [mostrarModalRubro, setMostrarModalRubro] = useState(false);
+  const [nuevoRubroCod, setNuevoRubroCod] = useState('');
+  const [nuevoRubroNombre, setNuevoRubroNombre] = useState('');
 
   const [codBien, setCodBien] = useState('');
   const [descBien, setDescBien] = useState('');
@@ -105,13 +110,61 @@ function TablaBienes() {
     window.print();
   };
 
+
   const handleRubroChange = (e) => {
     const valor = e.target.value;
+    
+    if (valor === 'nuevo') {
+      setMostrarModalRubro(true); // Abre el modal
+      return;
+    }
+
     setRubroSeleccionado(valor);
     setTipoSeleccionado('');
   };
 
-  
+  const guardarNuevoRubro = () => {
+    if (!nuevoRubroCod || !nuevoRubroNombre) {
+      alert('Por favor, ingresa el código y el nombre del rubro.');
+      return;
+    }
+
+    const nuevoRubro = {
+      id: parseInt(nuevoRubroCod),
+      nombre: nuevoRubroNombre.toUpperCase()
+    };
+
+    // Agrega el nuevo rubro a la lista y lo deja seleccionado
+    setRubros([...rubros, nuevoRubro].sort((a, b) => a.id - b.id)); 
+    setRubroSeleccionado(nuevoRubro.id.toString());
+    
+    // Limpia y cierra el modal
+    setNuevoRubroCod('');
+    setNuevoRubroNombre('');
+    setMostrarModalRubro(false);
+  };
+
+  const eliminarRubro = () => {
+    if (!rubroSeleccionado) {
+      alert("Por favor, selecciona el rubro que deseas eliminar.");
+      return;
+    }
+
+    // Buscamos el nombre del rubro para mostrarlo en el mensaje
+    const rubroAELiminar = rubros.find(r => r.id.toString() === rubroSeleccionado);
+    
+    const confirmacion = window.confirm(`¿Estás seguro de que deseas eliminar el rubro "${rubroAELiminar.id} - ${rubroAELiminar.nombre}"?`);
+    
+    if (confirmacion) {
+      // Filtramos la lista para dejar todos menos el que queremos borrar
+      const nuevaLista = rubros.filter(r => r.id.toString() !== rubroSeleccionado);
+      setRubros(nuevaLista);
+      
+      // Limpiamos la selección
+      setRubroSeleccionado('');
+      setTipoSeleccionado('');
+    }
+  };
 
   const toggleEstado = (idBien) => {
     setBienes(bienes.map(bien => {
@@ -247,13 +300,68 @@ function TablaBienes() {
             <label>Descripción Detallada:</label>
             <textarea value={descDetallada} onChange={(e) => setDescDetallada(e.target.value)} className={styles.inputControl} style={{ height: '60px', resize: 'vertical' }} placeholder="Especificaciones técnicas..." />
           </div>
+
           <div className={styles.grupoInput}>
             <label>Rubro (*):</label>
-            <select value={rubroSeleccionado} onChange={handleRubroChange} className={styles.inputControl} style={{ cursor: 'pointer' }}>
-              <option value="">-- Seleccione un Rubro --</option>
-              {LISTA_RUBROS.map((rubro) => <option key={rubro.id} value={rubro.id}>{rubro.id} - {rubro.nombre}</option>)}
-            </select>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <select 
+                value={rubroSeleccionado} 
+                onChange={handleRubroChange} 
+                className={styles.inputControl} 
+                style={{ cursor: 'pointer', flex: 1 }}
+              >
+                <option value="">-- Seleccione un Rubro --</option>
+                
+                <option value="nuevo" style={{ fontWeight: 'bold', color: '#0056b3' }}>
+                   Agregar nuevo rubro...
+                </option>
+
+                {rubros.map((rubro) => (
+                  <option key={rubro.id} value={rubro.id}>
+                    {rubro.id} - {rubro.nombre}
+                  </option>
+                ))}
+              </select>
+
+              {/* BOTÓN DE ELIMINAR */}
+              <button 
+                type="button" 
+                onClick={eliminarRubro}
+                disabled={!rubroSeleccionado || rubroSeleccionado === 'nuevo'}
+                style={{
+                  padding: '0 12px',
+                  backgroundColor: (!rubroSeleccionado || rubroSeleccionado === 'nuevo') ? '#e2e8f0' : '#A32424',
+                  color: (!rubroSeleccionado || rubroSeleccionado === 'nuevo') ? '#a0aec0' : 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: (!rubroSeleccionado || rubroSeleccionado === 'nuevo') ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+                title="Eliminar rubro seleccionado"
+              >
+                {/* Icono SVG profesional (estilo minimalista) */}
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="18" 
+                  height="18" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                >
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+              </button>
+            </div>
           </div>
+
           <div className={styles.grupoInput}>
             <label>Tipo de Bien:</label>
             <select value={tipoSeleccionado} onChange={(e) => setTipoSeleccionado(e.target.value)} className={styles.inputControl} disabled={rubroSeleccionado !== "499"} style={{ cursor: rubroSeleccionado === "499" ? 'pointer' : 'not-allowed' }}>
@@ -383,6 +491,54 @@ function TablaBienes() {
           ))}
         </tbody>
       </table>
+
+      {/* --- MODAL FLOTANTE PARA NUEVO RUBRO --- */}
+      {mostrarModalRubro && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1050 }}>
+          <div style={{ backgroundColor: 'white', padding: '25px', borderRadius: '8px', maxWidth: '400px', width: '90%', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
+            <h3 style={{ marginTop: 0, borderBottom: '2px solid #3C5177', paddingBottom: '8px', color: '#3C5177' }}>Agregar Nuevo Rubro</h3>
+            
+            <div style={{ marginBottom: '15px' }}>
+              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Código del Rubro:</label>
+              <input 
+                type="number" 
+                value={nuevoRubroCod} 
+                onChange={(e) => setNuevoRubroCod(e.target.value)} 
+                className={styles.inputControl} 
+                placeholder="Ej: 500" 
+              />
+            </div>
+            
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Nombre del Rubro:</label>
+              <input 
+                type="text" 
+                value={nuevoRubroNombre} 
+                onChange={(e) => setNuevoRubroNombre(e.target.value)} 
+                className={styles.inputControl} 
+                placeholder="Ej: MOBILIARIO NUEVO" 
+              />
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button 
+                type="button"
+                onClick={() => setMostrarModalRubro(false)} 
+                style={{ padding: '8px 16px', backgroundColor: '#e2e8f0', color: '#333', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}
+              >
+                Cancelar
+              </button>
+              <button 
+                type="button"
+                onClick={guardarNuevoRubro} 
+                style={{ padding: '8px 16px', backgroundColor: '#1F7246', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer' }}
+              >
+                Guardar Rubro
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* --- MODAL FLOTANTE DE ETIQUETAS --- */}
       {bienParaImprimir && (
