@@ -5,8 +5,7 @@ import QRCode from 'react-qr-code';
 import Barcode from 'react-barcode';
 
 // Importamos las librerías de exportación
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import { generarPDFAnexo } from './exportarPDFAnexo';
 import * as XLSX from 'xlsx';
 
 const LISTA_RUBROS = [
@@ -105,6 +104,24 @@ function TablaBienes() {
       valor?.toString().toLowerCase().includes(busqueda.toLowerCase())
     )
   );
+
+  // --- SELECCIÓN PARA EXPORTAR ---
+  const [seleccionados, setSeleccionados] = useState([]);
+
+  const toggleSeleccion = (id) =>
+    setSeleccionados((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+
+  const todosVisiblesSeleccionados =
+    bienesFiltrados.length > 0 && bienesFiltrados.every((b) => seleccionados.includes(b.id_bien));
+
+  const toggleTodosVisibles = () => {
+    const idsVisibles = bienesFiltrados.map((b) => b.id_bien);
+    setSeleccionados((prev) =>
+      todosVisiblesSeleccionados
+        ? prev.filter((id) => !idsVisibles.includes(id))
+        : [...new Set([...prev, ...idsVisibles])]
+    );
+  };
 
   const lanzarImpresion = () => {
     window.print();
@@ -242,43 +259,12 @@ function TablaBienes() {
   // EXPORTAR A PDF (.PDF)
   // ==========================================
   const exportarAPDF = () => {
-    const doc = new jsPDF('landscape'); // Apaisado para que entren bien todas las columnas
-
-    // Título institucional
-    doc.setFontSize(16);
-    doc.text('IOSEP - INVENTARIO GENERAL DE BIENES PATRIMONIALES', 14, 15);
-    
-    doc.setFontSize(10);
-    doc.text(`Fecha de Reporte: ${new Date().toLocaleString('es-AR')}`, 14, 22);
-
-    // Definición de las columnas de la tabla del PDF
-    const columnas = ['Código', 'Descripción', 'Rubro', 'Departamento', 'Responsable', 'Valor', 'Estado', 'Último Cambio'];
-    
-    // Filas ordenadas
-    const filas = bienes.map(b => [
-      b.cod_bien,
-      b.desc_bien + (b.tipo && b.tipo.nombre_tipo !== 'General' ? ` (Tipo: ${b.tipo.nombre_tipo})` : ''),
-      b.rubro ? `${b.rubro.id_rubro}` : 'N/A',
-      b.departamento?.nombre_departamento || 'Sin asignar',
-      b.responsable?.nombre_responsable || 'Sin asignar',
-      `${b.moneda} ${b.valor_moneda ? b.valor_moneda.toLocaleString() : '0'}`,
-      b.estado,
-      formatearFechaMostrar(b.fecha_alta)
-    ]);
-
-    // Generar la tabla estilizada automáticamente
-    doc.autoTable({
-      head: [columnas],
-      body: filas,
-      startY: 28,
-      theme: 'grid',
-      headStyles: { fillColor: [60, 81, 119], textColor: [255, 255, 255], fontStyle: 'bold' },
-      styles: { fontSize: 8, cellPadding: 3 },
-      columnStyles: { 1: { cellWidth: 50 } } // Le da más espacio a la descripción
-    });
-
-    // Descarga automática
-    doc.save(`Inventario_Patrimonial_${new Date().toISOString().slice(0,10)}.pdf`);
+    const elegidos = bienes.filter((b) => seleccionados.includes(b.id_bien));
+    if (elegidos.length === 0) {
+      alert('Seleccioná al menos un bien para exportar.');
+      return;
+    }
+    generarPDFAnexo(elegidos);
   };
 
   return (
@@ -436,9 +422,10 @@ function TablaBienes() {
           </button>
           <button 
             onClick={exportarAPDF}
-            style={{ padding: '8px 16px', backgroundColor: '#A32424', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+            disabled={seleccionados.length === 0}
+            style={{ padding: '8px 16px', backgroundColor: '#A32424', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: seleccionados.length === 0 ? 'not-allowed' : 'pointer', opacity: seleccionados.length === 0 ? 0.5 : 1, display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
           >
-             Exportar PDF
+             Exportar PDF ({seleccionados.length})
           </button>
         </div>
       </div>
@@ -447,6 +434,14 @@ function TablaBienes() {
       <table className={styles.tablaBienes} style={{ marginTop: '15px' }}>
         <thead>
           <tr>
+            <th style={{ width: '40px', textAlign: 'center' }}>
+              <input
+                type="checkbox"
+                checked={todosVisiblesSeleccionados}
+                onChange={toggleTodosVisibles}
+                title="Seleccionar / quitar todos los bienes visibles"
+              />
+            </th>
             <th>Código</th>
             <th>Descripción / Tipo</th>
             <th>Rubro</th>
@@ -460,6 +455,13 @@ function TablaBienes() {
         <tbody>
         {bienesFiltrados.map((bien) => (
             <tr key={bien.id_bien}>
+              <td style={{ textAlign: 'center' }}>
+                <input
+                  type="checkbox"
+                  checked={seleccionados.includes(bien.id_bien)}
+                  onChange={() => toggleSeleccion(bien.id_bien)}
+                />
+              </td>
               <td className={styles.codigoDestacado}>{bien.cod_bien}</td>
               <td>
                 <strong>{bien.desc_bien}</strong>
