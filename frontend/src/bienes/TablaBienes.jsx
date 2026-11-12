@@ -263,7 +263,7 @@ const formatearFechaMostrar = (fechaString) => {
 };
 
 function TablaBienes() {
-  const [bienes, setBienes] = useState(() => 
+  const [bienes, setBienes] = useState(() =>  
     MOCK_BIENES.map(b => ({ ...b, estado: b.estado || 'Alta', fecha_alta: b.fecha_alta || new Date().toISOString(), factura: b.factura || '', valor: b.valor !== undefined ? b.valor : (b.valor_moneda || 0) }))
   );
   
@@ -568,7 +568,6 @@ function TablaBienes() {
     setEditDepto(bien.departamento?.nombre_departamento || '');
     setEditResp(bien.responsable?.nombre_responsable || '');
     
-    // Obtener el valor utilizando 'valor' o respaldando con 'valor_moneda'
     const valActual = bien.valor !== undefined && bien.valor !== null ? bien.valor : (bien.valor_moneda !== undefined && bien.valor_moneda !== null ? bien.valor_moneda : '');
     setEditValor(valActual !== '' ? valActual.toString() : '');
     
@@ -719,44 +718,12 @@ function TablaBienes() {
   };
 
   const exportarAPDF = () => {
- 
     const elegidos = bienes.filter((b) => seleccionados.includes(b.id_bien));
     if (elegidos.length === 0) {
       alert('Seleccioná al menos un bien para exportar.');
       return;
     }
     generarPDFAnexo(elegidos);
-
-    const doc = new jsPDF('landscape');
-    doc.setFontSize(16);
-    doc.text('IOSEP - INVENTARIO GENERAL DE BIENES PATRIMONIALES', 14, 15);
-    doc.setFontSize(10);
-    doc.text(`Fecha de Reporte: ${new Date().toLocaleString('es-AR')}`, 14, 22);
-
-    const columnas = ['Código', 'Descripción', 'Rubro', 'Departamento', 'Responsable', 'Valor', 'Estado', 'Último Cambio'];
-    const filas = bienes.map(b => [
-      b.cod_bien,
-      b.desc_bien + (b.tipo && b.tipo.nombre_tipo !== 'General' ? ` (Tipo: ${b.tipo.nombre_tipo})` : ''),
-      b.rubro ? `${b.rubro.id_rubro}` : 'N/A',
-      b.departamento?.nombre_departamento || 'Sin asignar',
-      b.responsable?.nombre_responsable || 'Sin asignar',
-      `${b.moneda} ${b.valor ? b.valor.toLocaleString() : '0'}`,
-      b.estado,
-      formatearFechaMostrar(b.fecha_alta)
-    ]);
-
-    doc.autoTable({
-      head: [columnas],
-      body: filas,
-      startY: 28,
-      theme: 'grid',
-      headStyles: { fillColor: [60, 81, 119], textColor: [255, 255, 255], fontStyle: 'bold' },
-      styles: { fontSize: 8, cellPadding: 3 },
-      columnStyles: { 1: { cellWidth: 50 } }
-    });
-
-    doc.save(`Inventario_Patrimonial_${new Date().toISOString().slice(0,10)}.pdf`);
-
   };
 
   return (
@@ -1136,94 +1103,30 @@ function TablaBienes() {
             Exportar Excel
           </button>
           <button 
-
             onClick={exportarAPDF}
             disabled={seleccionados.length === 0}
-            style={{ padding: '8px 16px', backgroundColor: '#A32424', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: seleccionados.length === 0 ? 'not-allowed' : 'pointer', opacity: seleccionados.length === 0 ? 0.5 : 1, display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+            style={{ padding: '8px 16px', backgroundColor: '#A32424', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: seleccionados.length === 0 ? 'not-allowed' : 'pointer', opacity: seleccionados.length === 0 ? 0.5 : 1, display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', transition: 'background-color 0.2s' }}
+            onMouseEnter={(e) => { if (seleccionados.length > 0) e.target.style.backgroundColor = '#821B1B'; }}
+            onMouseLeave={(e) => { if (seleccionados.length > 0) e.target.style.backgroundColor = '#A32424'; }}
           >
-             Exportar PDF ({seleccionados.length})
-
-            onClick={exportarAPDF} 
-            style={{ padding: '8px 16px', backgroundColor: '#A32424', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'background-color 0.2s' }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#821B1B'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#A32424'}
-          
-            Exportar PDF
-
+            Exportar PDF ({seleccionados.length})
           </button>
         </div>
       </div>
-
-
-      {/* --- TABLA DE BIENES --- */}
-      <table className={styles.tablaBienes} style={{ marginTop: '15px' }}>
-        <thead>
-          <tr>
-            <th style={{ width: '40px', textAlign: 'center' }}>
-              <input
-                type="checkbox"
-                checked={todosVisiblesSeleccionados}
-                onChange={toggleTodosVisibles}
-                title="Seleccionar / quitar todos los bienes visibles"
-              />
-            </th>
-            <th>Código</th>
-            <th>Descripción / Tipo</th>
-            <th>Rubro</th>
-            <th>Departamento</th>
-            <th>Responsable</th>
-            <th>Valor / Cambio</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-        {bienesFiltrados.map((bien) => (
-            <tr key={bien.id_bien}>
-              <td style={{ textAlign: 'center' }}>
-                <input
-                  type="checkbox"
-                  checked={seleccionados.includes(bien.id_bien)}
-                  onChange={() => toggleSeleccion(bien.id_bien)}
-                />
-              </td>
-              <td className={styles.codigoDestacado}>{bien.cod_bien}</td>
-              <td>
-                <strong>{bien.desc_bien}</strong>
-                {bien.tipo && bien.tipo.nombre_tipo !== 'General' && (
-                  <span className={styles.textoSecundario} style={{ color: '#2b6cb0', fontWeight: 'bold' }}>
-                    Tipo: {bien.tipo.id_tipo} - {bien.tipo.nombre_tipo}
-                  </span>
-                )}
-                {bien.desc_detallada && <span className={styles.textoSecundario}>{bien.desc_detallada}</span>}
-              </td>
-              <td>{bien.rubro ? <span><strong>{bien.rubro.id_rubro}</strong> - <small>{bien.rubro.nombre_rubro}</small></span> : <span style={{ color: '#999' }}>Sin rubro</span>}</td>
-              <td>{bien.departamento?.nombre_departamento}</td>
-              <td>{bien.responsable?.nombre_responsable}</td>
-              <td>
-                <strong>{bien.moneda} {bien.valor_moneda ? bien.valor_moneda.toLocaleString() : '0'}</strong>
-                <span className={styles.textoSecundario} style={{ fontStyle: 'italic', color: '#555', marginTop: '4px' }}>🕒 {formatearFechaMostrar(bien.fecha_alta)}</span>
-              </td>
-              <td style={{ textAlign: 'center' }}>
-                <button onClick={() => toggleEstado(bien.id_bien)} style={{ padding: '6px 14px', borderRadius: '20px', border: 'none', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer', backgroundColor: bien.estado === 'Alta' ? '#C6F6D5' : '#FED7D7', color: bien.estado === 'Alta' ? '#22543D' : '#742A2A' }}>
-                  {bien.estado}
-                </button>
-              </td>
-              <td style={{ textAlign: 'center' }}>
-                <button onClick={() => setBienParaImprimir(bien)} style={{ padding: '6px 12px', backgroundColor: '#3C5177', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer' }}>
-                   Etiquetas
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
 
       {/* --- TABLA DE BIENES PROFESIONAL CON TODOS LOS CAMPOS VISIBLES --- */}
       <div style={{ overflowX: 'auto', marginTop: '15px' }}>
         <table className={styles.tablaBienes} style={{ width: '100%', minWidth: '1200px', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
+              <th style={{ width: '40px', textAlign: 'center', padding: '12px 10px' }}>
+                <input
+                  type="checkbox"
+                  checked={todosVisiblesSeleccionados}
+                  onChange={toggleTodosVisibles}
+                  title="Seleccionar / quitar todos los bienes visibles"
+                />
+              </th>
               <th style={{ padding: '12px 10px', textAlign: 'left' }}>Código</th>
               <th style={{ padding: '12px 10px', textAlign: 'left' }}>Descripción / Detalle</th>
               <th style={{ padding: '12px 10px', textAlign: 'left' }}>Rubro</th>
@@ -1235,12 +1138,18 @@ function TablaBienes() {
               <th style={{ padding: '12px 10px', textAlign: 'center' }}>Fecha de Alta</th>
               <th style={{ padding: '12px 10px', textAlign: 'center' }}>Estado</th>
               <th style={{ padding: '12px 10px', textAlign: 'center' }}>Acciones</th>
-
             </tr>
           </thead>
           <tbody>
             {bienesFiltrados.map((bien) => (
               <tr key={bien.id_bien} style={{ borderBottom: '1px solid #e2e8f0', transition: 'background-color 0.2s' }}>
+                <td style={{ textAlign: 'center', padding: '12px 10px', verticalAlign: 'middle' }}>
+                  <input
+                    type="checkbox"
+                    checked={seleccionados.includes(bien.id_bien)}
+                    onChange={() => toggleSeleccion(bien.id_bien)}
+                  />
+                </td>
                 <td style={{ padding: '12px 10px', verticalAlign: 'middle' }}>
                   <span className={styles.codigoDestacado} style={{ fontWeight: 'bold', color: '#3C5177', whiteSpace: 'nowrap' }}>
                     {bien.cod_bien}
