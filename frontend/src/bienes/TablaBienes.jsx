@@ -1136,25 +1136,25 @@ function TablaBienes() {
             Exportar Excel
           </button>
           <button 
-<<<<<<< Updated upstream
+
             onClick={exportarAPDF}
             disabled={seleccionados.length === 0}
             style={{ padding: '8px 16px', backgroundColor: '#A32424', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: seleccionados.length === 0 ? 'not-allowed' : 'pointer', opacity: seleccionados.length === 0 ? 0.5 : 1, display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
           >
              Exportar PDF ({seleccionados.length})
-=======
+
             onClick={exportarAPDF} 
             style={{ padding: '8px 16px', backgroundColor: '#A32424', color: 'white', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'background-color 0.2s' }}
             onMouseEnter={(e) => e.target.style.backgroundColor = '#821B1B'}
             onMouseLeave={(e) => e.target.style.backgroundColor = '#A32424'}
-          >
+          
             Exportar PDF
->>>>>>> Stashed changes
+
           </button>
         </div>
       </div>
 
-<<<<<<< Updated upstream
+
       {/* --- TABLA DE BIENES --- */}
       <table className={styles.tablaBienes} style={{ marginTop: '15px' }}>
         <thead>
@@ -1214,7 +1214,11 @@ function TablaBienes() {
                    Etiquetas
                 </button>
               </td>
-=======
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
       {/* --- TABLA DE BIENES PROFESIONAL CON TODOS LOS CAMPOS VISIBLES --- */}
       <div style={{ overflowX: 'auto', marginTop: '15px' }}>
         <table className={styles.tablaBienes} style={{ width: '100%', minWidth: '1200px', borderCollapse: 'collapse' }}>
@@ -1231,7 +1235,7 @@ function TablaBienes() {
               <th style={{ padding: '12px 10px', textAlign: 'center' }}>Fecha de Alta</th>
               <th style={{ padding: '12px 10px', textAlign: 'center' }}>Estado</th>
               <th style={{ padding: '12px 10px', textAlign: 'center' }}>Acciones</th>
->>>>>>> Stashed changes
+
             </tr>
           </thead>
           <tbody>
