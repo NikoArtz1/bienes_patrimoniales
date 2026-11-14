@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { MOCK_BIENES } from './mockBienes';
 import styles from './Bienes.module.css';
 import QRCode from 'react-qr-code';
@@ -262,6 +262,17 @@ const formatearFechaMostrar = (fechaString) => {
   });
 };
 
+// --- PAGINACIÓN ---
+const BIENES_POR_PAGINA = 20;
+
+// Devuelve los botones a mostrar: 1 2 3 4 5 … 67 (con puntos suspensivos como '...')
+const generarNumerosPagina = (actual, total) => {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  if (actual <= 4) return [1, 2, 3, 4, 5, '...', total];
+  if (actual >= total - 3) return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+  return [1, '...', actual - 1, actual, actual + 1, '...', total];
+};
+
 function TablaBienes() {
   const [bienes, setBienes] = useState(() =>  
     MOCK_BIENES.map(b => ({ ...b, estado: b.estado || 'Alta', fecha_alta: b.fecha_alta || new Date().toISOString(), factura: b.factura || '', valor: b.valor !== undefined ? b.valor : (b.valor_moneda || 0) }))
@@ -373,17 +384,31 @@ function TablaBienes() {
   const totalAltasFiltradas = bienesFiltrados.filter(b => b.estado === 'Alta').length;
   const totalBajasFiltradas = bienesFiltrados.filter(b => b.estado === 'Baja').length;
 
+  // --- PAGINACIÓN: 20 bienes por página ---
+  const [paginaActual, setPaginaActual] = useState(1);
+  const tablaRef = useRef(null);
+  const totalPaginas = Math.max(1, Math.ceil(bienesFiltrados.length / BIENES_POR_PAGINA));
+  const paginaSegura = Math.min(paginaActual, totalPaginas); // por si se borran bienes o cambia el filtro
+  const indiceInicio = (paginaSegura - 1) * BIENES_POR_PAGINA;
+  const bienesPagina = bienesFiltrados.slice(indiceInicio, indiceInicio + BIENES_POR_PAGINA);
+
+  const irAPagina = (n) => {
+    setPaginaActual(Math.min(Math.max(1, n), totalPaginas));
+    tablaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   // --- SELECCIÓN PARA EXPORTAR ---
   const [seleccionados, setSeleccionados] = useState([]);
 
   const toggleSeleccion = (id) =>
     setSeleccionados((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
+  // La casilla del encabezado marca / desmarca los bienes de la PÁGINA actual
   const todosVisiblesSeleccionados =
-    bienesFiltrados.length > 0 && bienesFiltrados.every((b) => seleccionados.includes(b.id_bien));
+    bienesPagina.length > 0 && bienesPagina.every((b) => seleccionados.includes(b.id_bien));
 
   const toggleTodosVisibles = () => {
-    const idsVisibles = bienesFiltrados.map((b) => b.id_bien);
+    const idsVisibles = bienesPagina.map((b) => b.id_bien);
     setSeleccionados((prev) =>
       todosVisiblesSeleccionados
         ? prev.filter((id) => !idsVisibles.includes(id))
@@ -1069,7 +1094,7 @@ function TablaBienes() {
           type="text"
           placeholder="Buscar bienes..."
           value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
+          onChange={(e) => { setBusqueda(e.target.value); setPaginaActual(1); }}
           style={{ flex: 1, border: 'none', outline: 'none', backgroundColor: 'transparent', fontSize: '1rem', color: '#333' }}
         />
       </div>
@@ -1115,7 +1140,7 @@ function TablaBienes() {
       </div>
 
       {/* --- TABLA DE BIENES PROFESIONAL CON TODOS LOS CAMPOS VISIBLES --- */}
-      <div style={{ overflowX: 'auto', marginTop: '15px' }}>
+      <div ref={tablaRef} style={{ overflowX: 'auto', marginTop: '15px', scrollMarginTop: '10px' }}>
         <table className={styles.tablaBienes} style={{ width: '100%', minWidth: '1200px', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
@@ -1124,7 +1149,7 @@ function TablaBienes() {
                   type="checkbox"
                   checked={todosVisiblesSeleccionados}
                   onChange={toggleTodosVisibles}
-                  title="Seleccionar / quitar todos los bienes visibles"
+                  title="Seleccionar / quitar todos los bienes de esta página"
                 />
               </th>
               <th style={{ padding: '12px 10px', textAlign: 'left' }}>Código</th>
@@ -1141,7 +1166,7 @@ function TablaBienes() {
             </tr>
           </thead>
           <tbody>
-            {bienesFiltrados.map((bien) => (
+            {bienesPagina.map((bien) => (
               <tr key={bien.id_bien} style={{ borderBottom: '1px solid #e2e8f0', transition: 'background-color 0.2s' }}>
                 <td style={{ textAlign: 'center', padding: '12px 10px', verticalAlign: 'middle' }}>
                   <input
@@ -1271,6 +1296,75 @@ function TablaBienes() {
           </tbody>
         </table>
       </div>
+
+      {/* --- PAGINACIÓN --- */}
+      {bienesFiltrados.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginTop: '16px' }}>
+          <div style={{ fontSize: '0.9rem', color: '#4a5568', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <span>
+              Mostrando {(indiceInicio + 1).toLocaleString('es-AR')}–{Math.min(indiceInicio + BIENES_POR_PAGINA, bienesFiltrados.length).toLocaleString('es-AR')} de {bienesFiltrados.length.toLocaleString('es-AR')} bienes
+            </span>
+            <button
+              type="button"
+              onClick={() => setSeleccionados((prev) => [...new Set([...prev, ...bienesFiltrados.map((b) => b.id_bien)])])}
+              style={{ background: 'none', border: 'none', color: '#3C5177', textDecoration: 'underline', cursor: 'pointer', fontSize: '0.9rem', padding: 0 }}
+            >
+              Seleccionar los {bienesFiltrados.length.toLocaleString('es-AR')} resultados
+            </button>
+            {seleccionados.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setSeleccionados([])}
+                style={{ background: 'none', border: 'none', color: '#A32424', textDecoration: 'underline', cursor: 'pointer', fontSize: '0.9rem', padding: 0 }}
+              >
+                Quitar selección ({seleccionados.length})
+              </button>
+            )}
+          </div>
+
+          {totalPaginas > 1 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => irAPagina(paginaSegura - 1)}
+                disabled={paginaSegura === 1}
+                style={{ background: 'none', border: 'none', color: '#4a5568', cursor: paginaSegura === 1 ? 'not-allowed' : 'pointer', opacity: paginaSegura === 1 ? 0.4 : 1, fontSize: '0.95rem', padding: '0 8px' }}
+              >
+                &lt; Anterior
+              </button>
+              {generarNumerosPagina(paginaSegura, totalPaginas).map((n, i) =>
+                n === '...' ? (
+                  <span key={`puntos-${i}`} style={{ color: '#718096', padding: '0 4px' }}>…</span>
+                ) : (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => irAPagina(n)}
+                    aria-current={n === paginaSegura ? 'page' : undefined}
+                    style={{
+                      minWidth: '40px', height: '40px', padding: '0 8px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem',
+                      border: n === paginaSegura ? '1px solid #3C5177' : '1px solid #d9dde3',
+                      backgroundColor: n === paginaSegura ? '#3C5177' : 'white',
+                      color: n === paginaSegura ? 'white' : '#2d3748',
+                      fontWeight: n === paginaSegura ? 'bold' : 'normal',
+                    }}
+                  >
+                    {n}
+                  </button>
+                )
+              )}
+              <button
+                type="button"
+                onClick={() => irAPagina(paginaSegura + 1)}
+                disabled={paginaSegura === totalPaginas}
+                style={{ background: 'none', border: 'none', color: '#4a5568', cursor: paginaSegura === totalPaginas ? 'not-allowed' : 'pointer', opacity: paginaSegura === totalPaginas ? 0.4 : 1, fontSize: '0.95rem', padding: '0 8px' }}
+              >
+                Siguiente &gt;
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* --- MODAL FLOTANTE PARA EDITAR BIEN --- */}
       {bienAEditar && (
